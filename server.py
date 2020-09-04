@@ -7,12 +7,13 @@ from message import message
 import time
 import jsonpickle
 from crypto import *
+import base64
 
 api = Flask(__name__)
 
 class globals():
     messages = []
-    key = "hello world"
+    messageChangeID = 0
 
 globals.messages.append(message("Hello", time.time(), "Server"))
 
@@ -24,6 +25,15 @@ def encodeAndEncryptMessages():
     resp = jsonpickle.encode(resp)
 
     return resp
+
+#the user will call this with a long timeout. I'll reply when there's a new message.
+@api.route("/check_messages", methods=["GET"])
+def check_messages():
+    messageChangeID = globals.messageChangeID
+    while messageChangeID == globals.messageChangeID:
+        time.sleep(0.01)
+
+    return "CHANGE"
 
 @api.route("/get_messages", methods=["GET"])
 def get_messages():
@@ -40,6 +50,11 @@ def send_message():
     sender = request.headers.get("sender")
     text = request.headers.get("message")
 
+    print(str(base64.b64decode(sender)))
+
+    sender = decrypt(base64.b64decode(sender))
+    text = decrypt(base64.b64decode(text))
+
     if len(text) > 16384:
         text = "Message too long"
 
@@ -47,6 +62,7 @@ def send_message():
 
     trim_messages()
 
+    globals.messageChangeID = globals.messageChangeID + 1
     return "200 OK"
 
 def trim_messages():
@@ -58,4 +74,4 @@ def index():
     return "ROOT"
 
 if __name__ == '__main__':
-    serve(api, port=443)
+    serve(api, port=443, channel_timeout=999999999)
