@@ -4,8 +4,7 @@ import time
 from threading import Thread
 import tkinter
 import jsonpickle
-
-from Crypto.Cipher import AES
+from crypto import *
 
 baseUrl = "http://127.0.0.1:443"
 
@@ -58,18 +57,25 @@ def get_loop():
 
     while True:
         time.sleep(0.25)
-        r = requests.get(baseUrl + "/get_messages").content
 
-        print(str(r))
-        unpickledmessages = jsonpickle.decode(r)
+        headers = {"auth": maketoken()}
 
-        if not unpickledmessages == globals.messages:
-            globals.messages = unpickledmessages
+        r = requests.get(baseUrl + "/get_messages", headers=headers)
 
-            gui.message_list.delete(0, tkinter.END)
-            for message in globals.messages:
-                toAppend = message.sender + " : " + message.text
-                gui.message_list.insert(tkinter.END, toAppend)
+        while r.content == "401 Unauthorized":
+            headers = {"auth": maketoken()}
+            time.sleep(0.1)
+            r = requests.get(baseUrl + "/get_messages", headers=headers)
+
+        unpickledmessages = jsonpickle.decode(r.content)
+
+        globals.messages = unpickledmessages
+
+        gui.message_list.delete(0, tkinter.END)
+        for message in globals.messages:
+            toAppend = decrypt(message.sender) + " : " + decrypt(message.text)
+            gui.message_list.insert(tkinter.END, toAppend)
+
 
 Thread(target=get_loop).start()
 

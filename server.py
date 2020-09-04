@@ -6,16 +6,34 @@ from flask import *
 from message import message
 import time
 import jsonpickle
+from crypto import *
 
 api = Flask(__name__)
 
 class globals():
     messages = []
+    key = "hello world"
+
 globals.messages.append(message("Hello", time.time(), "Server"))
+
+def encodeAndEncryptMessages():
+    resp = []
+    for m in globals.messages:
+        resp.append(message(encrypt(m.text), time.time(), encrypt(m.sender)))
+
+    resp = jsonpickle.encode(resp)
+
+    return resp
 
 @api.route("/get_messages", methods=["GET"])
 def get_messages():
-    return jsonpickle.encode(globals.messages)
+    auth = request.headers.get("auth").strip("\n").strip("\t")
+
+    if auth == maketoken():
+        return encodeAndEncryptMessages()
+    else:
+        print("UNAUTHORISED CONNECTION")
+        return "401 Unauthorized"
 
 @api.route("/send_message", methods=["POST"])
 def send_message():
