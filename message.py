@@ -1,5 +1,5 @@
 class message():
-    def __init__(self, message, time, sender):
-        self.message = message
+    def __init__(self, text, time, sender):
+        self.text = text
         self.time = time
         self.sender = sender
