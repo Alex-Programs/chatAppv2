@@ -5,10 +5,8 @@ import base64
 
 def encrypt(data):
     #timestamp acting as a nonce
-    timestamp = time.time()/1024
+    timestamp = time.time()/256
     timestamp = round(timestamp)
-
-    print(str(timestamp))
 
     key = "Very long and confidential key" + str(timestamp)
     key = bytes(key, "utf8")
@@ -22,7 +20,7 @@ def encrypt(data):
 
 def decrypt(data):
     #timestamp acting as a nonce
-    timestamp = time.time()/1024
+    timestamp = time.time()/256
     timestamp = round(timestamp)
 
     key = "Very long and confidential key" + str(timestamp)
@@ -40,7 +38,7 @@ def decrypt(data):
 
 def maketoken():
     privatekey = "fdsnfoisfsmfesjrf3wmj80wrwmdf8w90skfdsmfw3rjwrj30kr0kwfijesf0wfkpmeshfeisfoskfdksf"
-    timestamp = time.time()/1
+    timestamp = time.time()/2
     timestamp = round(timestamp)
 
     token = privatekey + str(timestamp)

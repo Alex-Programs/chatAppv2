@@ -6,7 +6,7 @@ import tkinter
 import jsonpickle
 from crypto import *
 
-baseUrl = "http://127.0.0.1:443"
+baseUrl = "http://192.168.0.51:443"
 
 class globals():
     messages = []
@@ -57,7 +57,8 @@ def send(event=None):
     requests.post(baseUrl + "/send_message", headers=headers)
 
 def on_closing():
-    exit()
+    gui.top.destroy()
+    raise SystemExit
 
 def get_loop():
     get(False)

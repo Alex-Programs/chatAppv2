@@ -76,5 +76,5 @@ def index():
     return "ROOT"
 
 if __name__ == '__main__':
-    globals.messages.append(message("Server Startup Succesful", time.time(), "Server"))
+    globals.messages.append(message("Server Startup successful", time.time(), "Server"))
     serve(api, port=443, channel_timeout=1024, threads=512)
