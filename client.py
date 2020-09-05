@@ -12,6 +12,7 @@ class globals():
     messages = []
     gui = None
     messageChangeID = "fklfklskfjs"
+    delayTime = 1
 
 class gui():
     def __init__(self):
@@ -59,14 +60,16 @@ def send(event=None):
     requests.post(baseUrl + "/send_message", headers=headers)
 
 def on_closing():
-    gui.top.destroy()
+    globals.gui.top.destroy()
     raise SystemExit
 
 def get_loop():
+    time.sleep(1)
     while True:
-        time.sleep(0.1)
-        r = requests.get(baseUrl + "/connectivitycheck").content
+        time.sleep(globals.delayTime)
+        r = requests.get(baseUrl + "/connectivity_check").content
         if not r == globals.messageChangeID:
+            print("Getting")
             get()
             globals.messageChangeID = r
 
@@ -92,6 +95,6 @@ def get():
         toAppend = decrypt(message.sender) + " : " + decrypt(message.text)
         globals.gui.message_list.insert(tkinter.END, toAppend)
 
-gui = gui()
+globals.gui = gui()
 Thread(target=get_loop).start()
 tkinter.mainloop()

@@ -8,6 +8,7 @@ import time
 import jsonpickle
 from crypto import *
 import base64
+from random import *
 
 api = Flask(__name__)
 
@@ -24,12 +25,10 @@ def encodeAndEncryptMessages():
 
     return resp
 
-#the user will call this with a long timeout. I'll reply when there's a new message.
-
 #not actually a connectivity check, but hey, it looks like one
-@api.route("/connectivityCheck", methods=["GET"])
-def check_messages():
-    return globals.messageChangeID
+@api.route("/connectivity_check", methods=["GET"])
+def connectivity_check():
+    return str(globals.messageChangeID) + " CONNECTIVITY OK"
 
 @api.route("/get_messages", methods=["GET"])
 def get_messages():
@@ -62,7 +61,7 @@ def send_message():
         globals.messages = []
         globals.messages.append(message("Hello", time.time(), "Server"))
 
-    globals.messageChangeID = choice(range(1,99999999999999)
+    globals.messageChangeID = choice(range(1,99999))
     return "200 OK"
 
 def trim_messages():
