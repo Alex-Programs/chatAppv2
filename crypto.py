@@ -4,17 +4,33 @@ import time
 import base64
 
 def encrypt(data):
-    key = b'Very long and confidential key'
+    #timestamp acting as a nonce
+    timestamp = time.time()/10
+    timestamp = round(timestamp)
+
+    key = "Very long and confidential key" + str(timestamp)
+    key = bytes(key, "utf8")
+
+    ###
+
     key = SHA.new(key).digest()
 
-    arc = ARC4.new(key)
+    arc = ARC4.new(key, drop=3072)
     return arc.encrypt(bytes(data, "utf8"))
 
 def decrypt(data):
-    key = b'Very long and confidential key'
+    #timestamp acting as a nonce
+    timestamp = time.time()/10
+    timestamp = round(timestamp)
+
+    key = "Very long and confidential key" + str(timestamp)
+    key = bytes(key, "utf8")
+
+    ###
+
     key = SHA.new(key).digest()
 
-    arc = ARC4.new(key)
+    arc = ARC4.new(key, drop=3072)
     data = str(arc.decrypt(data))
     data = data [2:]
     data = data [:-1]

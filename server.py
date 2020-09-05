@@ -15,8 +15,6 @@ class globals():
     messages = []
     messageChangeID = 0
 
-globals.messages.append(message("Hello", time.time(), "Server"))
-
 def encodeAndEncryptMessages():
     resp = []
     for m in globals.messages:
@@ -50,10 +48,16 @@ def send_message():
     sender = request.headers.get("sender")
     text = request.headers.get("message")
 
-    print(str(base64.b64decode(sender)))
-
     sender = decrypt(base64.b64decode(sender))
     text = decrypt(base64.b64decode(text))
+
+    print(str(sender) + " : " + str(text))
+
+    if "/wipe" in text:
+        globals.messages = []
+        globals.messages.append(message("Hello", time.time(), "Server"))
+
+    
 
     if len(text) > 16384:
         text = "Message too long"
@@ -74,4 +78,5 @@ def index():
     return "ROOT"
 
 if __name__ == '__main__':
+    globals.messages.append(message("Server Startup Succesful", time.time(), "Server"))
     serve(api, port=443, channel_timeout=999999999)
