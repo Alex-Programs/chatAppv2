@@ -76,6 +76,7 @@ def get(wait_for_messages):
     r = requests.get(baseUrl + "/get_messages", headers=headers)
 
     while r.content == "401 Unauthorized":
+        print("Retrying due to unauthorised")
         headers = {"auth": maketoken()}
         time.sleep(0.1)
         r = requests.get(baseUrl + "/get_messages", headers=headers)

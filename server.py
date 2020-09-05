@@ -51,13 +51,7 @@ def send_message():
     sender = decrypt(base64.b64decode(sender))
     text = decrypt(base64.b64decode(text))
 
-    print(str(sender) + " : " + str(text))
-
-    if "/wipe" in text:
-        globals.messages = []
-        globals.messages.append(message("Hello", time.time(), "Server"))
-
-    
+    print(str(sender) + " : " + str(text))    
 
     if len(text) > 16384:
         text = "Message too long"
@@ -65,6 +59,10 @@ def send_message():
     globals.messages.append(message(text, time.time(), sender))
 
     trim_messages()
+
+    if "/wipe" in text:
+        globals.messages = []
+        globals.messages.append(message("Hello", time.time(), "Server"))
 
     globals.messageChangeID = globals.messageChangeID + 1
     return "200 OK"
@@ -79,4 +77,4 @@ def index():
 
 if __name__ == '__main__':
     globals.messages.append(message("Server Startup Succesful", time.time(), "Server"))
-    serve(api, port=443, channel_timeout=999999999)
+    serve(api, port=443, channel_timeout=1024, threads=512)
