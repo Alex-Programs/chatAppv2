@@ -13,7 +13,7 @@ api = Flask(__name__)
 
 class globals():
     messages = []
-    messageChangeID = 0
+    messageChangeID = "kafjl"
 
 def encodeAndEncryptMessages():
     resp = []
@@ -25,13 +25,11 @@ def encodeAndEncryptMessages():
     return resp
 
 #the user will call this with a long timeout. I'll reply when there's a new message.
-@api.route("/check_messages", methods=["GET"])
-def check_messages():
-    messageChangeID = globals.messageChangeID
-    while messageChangeID == globals.messageChangeID:
-        time.sleep(0.01)
 
-    return "CHANGE"
+#not actually a connectivity check, but hey, it looks like one
+@api.route("/connectivityCheck", methods=["GET"])
+def check_messages():
+    return globals.messageChangeID
 
 @api.route("/get_messages", methods=["GET"])
 def get_messages():
@@ -64,7 +62,7 @@ def send_message():
         globals.messages = []
         globals.messages.append(message("Hello", time.time(), "Server"))
 
-    globals.messageChangeID = globals.messageChangeID + 1
+    globals.messageChangeID = choice(range(1,99999999999999)
     return "200 OK"
 
 def trim_messages():

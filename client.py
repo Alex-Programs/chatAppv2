@@ -10,6 +10,8 @@ baseUrl = "http://192.168.0.51:443"
 
 class globals():
     messages = []
+    gui = None
+    messageChangeID = "fklfklskfjs"
 
 class gui():
     def __init__(self):
@@ -42,8 +44,8 @@ class gui():
         self.top.protocol("WM_DELETE_WINDOW", on_closing)
 
 def send(event=None):
-    message = gui.message.get()
-    name = gui.name.get()
+    message = globals.gui.message.get()
+    name = globals.gui.name.get()
     print("Sending: " + message + " : " + name)
 
     #OK, so encrypt() returns bytes, which requests turns to a string. The server doesn't know what to do with bytes-like data
@@ -61,17 +63,14 @@ def on_closing():
     raise SystemExit
 
 def get_loop():
-    get(False)
-
     while True:
-        get(True)
+        time.sleep(0.1)
+        r = requests.get(baseUrl + "/connectivitycheck").content
+        if not r == globals.messageChangeID:
+            get()
+            globals.messageChangeID = r
 
-def get(wait_for_messages):
-    #acts as a blocker. Server only responds when there are new messages
-    if wait_for_messages:
-        requests.get(baseUrl + "/check_messages", timeout=9999)
-        print("Message changed")
-
+def get():
     headers = {"auth": maketoken()}
 
     r = requests.get(baseUrl + "/get_messages", headers=headers)
@@ -88,13 +87,11 @@ def get(wait_for_messages):
     except:
         pass
 
-    gui.message_list.delete(0, tkinter.END)
+    globals.gui.message_list.delete(0, tkinter.END)
     for message in globals.messages:
         toAppend = decrypt(message.sender) + " : " + decrypt(message.text)
-        gui.message_list.insert(tkinter.END, toAppend)
-
-
-Thread(target=get_loop).start()
+        globals.gui.message_list.insert(tkinter.END, toAppend)
 
 gui = gui()
+Thread(target=get_loop).start()
 tkinter.mainloop()

@@ -36,8 +36,8 @@ def decrypt(data):
     data = data [:-1]
     return data
 
-def maketoken():
-    privatekey = "fdsnfoisfsmfesjrf3wmj80wrwmdf8w90skfdsmfw3rjwrj30kr0kwfijesf0wfkpmeshfeisfoskfdksf"
+def maketoken(seed=""):
+    privatekey = "fdsnfoisfsmfesjrf3wmj80wrwmdf8w90skfdsmfw3rjwrj30kr0kwfijesf0wfkpmeshfeisfoskfdksf" + str(seed)
     timestamp = time.time()/2
     timestamp = round(timestamp)
 
