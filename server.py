@@ -12,6 +12,8 @@ from random import *
 
 api = Flask(__name__)
 
+credentials.key = input("Key: ")
+
 class globals():
     messages = []
     messageChangeID = "kafjl"

@@ -3,6 +3,7 @@ import requests
 import time
 from threading import Thread
 import tkinter
+from tkinter import simpledialog
 import jsonpickle
 from crypto import *
 
@@ -12,12 +13,16 @@ class globals():
     messages = []
     gui = None
     messageChangeID = "fklfklskfjs"
-    delayTime = 1
+    lastMessageTime = 0
 
 class gui():
     def __init__(self):
         self.top = tkinter.Tk()
         self.top.title("Encrypted Messenger")
+
+        self.top.withdraw()
+        credentials.key = simpledialog.askstring(title="Credentials Required", prompt="Please enter encryption keys: ")
+        self.top.deiconify()
 
         self.messages_frame = tkinter.Frame(self.top)
         self.message = tkinter.StringVar() 
@@ -65,13 +70,20 @@ def on_closing():
 
 def get_loop():
     time.sleep(1)
+    get()
+    globals.lastMessageTime = time.time()
     while True:
-        time.sleep(globals.delayTime)
+        t = time.time() - globals.lastMessageTime
+        toWait = 0.1 + (t/30)
+        if toWait > 1.5:
+            toWait = 1.5
+        time.sleep(toWait)
         r = requests.get(baseUrl + "/connectivity_check").content
         if not r == globals.messageChangeID:
             print("Getting")
             get()
             globals.messageChangeID = r
+            globals.lastMessageTime = time.time()
 
 def get():
     headers = {"auth": maketoken()}
