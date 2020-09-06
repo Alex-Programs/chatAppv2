@@ -14,6 +14,7 @@ class globals():
     gui = None
     messageChangeID = "fklfklskfjs"
     lastMessageTime = 0
+    channel = ""
 
 class gui():
     def __init__(self):
@@ -51,18 +52,39 @@ class gui():
 
 def send(event=None):
     message = globals.gui.message.get()
-    name = globals.gui.name.get()
-    print("Sending: " + message + " : " + name)
+    if parse_commands(message) == False:
+        name = globals.gui.name.get()
+        print("Sending: " + message + " : " + name)
 
-    #OK, so encrypt() returns bytes, which requests turns to a string. The server doesn't know what to do with bytes-like data
-    #with a string type. So first I go plaintext > ciphertextbytes > base64 > base64-string : internet > base64 > ciphertextbytes > plaintext
-    message = base64.b64encode(encrypt(message))
-    name = base64.b64encode(encrypt(name))
+        #OK, so encrypt() returns bytes, which requests turns to a string. The server doesn't know what to do with bytes-like data
+        #with a string type. So first I go plaintext > ciphertextbytes > base64 > base64-string : internet > base64 > ciphertextbytes > plaintext
+        message = base64.b64encode(encrypt(message))
+        name = base64.b64encode(encrypt(name))
+        channel = base64.b64encode(encrypt(globals.channel))
 
-    print(str(message))
+        print(str(message))
 
-    headers = {"message" : message, "sender" : name}
-    requests.post(baseUrl + "/send_message", headers=headers)
+        headers = {"message" : message, "sender" : name, "channel" : channel}
+        print(globals.channel)
+        requests.post(baseUrl + "/send_message", headers=headers)
+
+    get()
+
+def parse_commands(message):
+    i = 0
+    channel = ""
+
+    if "/ch " in message:
+        message = message.strip(" ")
+        channel = message[3:]
+        channel = channel.strip(" ")
+
+    if channel == "":
+        return False
+
+    else:
+        globals.channel = channel
+        return True
 
 def on_closing():
     globals.gui.top.destroy()
@@ -86,27 +108,32 @@ def get_loop():
             globals.lastMessageTime = time.time()
 
 def get():
-    headers = {"auth": maketoken()}
+    headers = {"auth": maketoken(), "channel" : globals.channel}
 
     r = requests.get(baseUrl + "/get_messages", headers=headers)
 
     while r.content == "401 Unauthorized":
         print("Retrying due to unauthorised")
-        headers = {"auth": maketoken()}
+        headers = {"auth": maketoken(), "channel" : globals.channel}
         time.sleep(0.1)
         r = requests.get(baseUrl + "/get_messages", headers=headers)
 
     try:
         unpickledmessages = jsonpickle.decode(r.content)
-        globals.messages = unpickledmessages
     except:
         pass
 
-    globals.gui.message_list.delete(0, tkinter.END)
-    for message in globals.messages:
-        toAppend = decrypt(message.sender) + " : " + decrypt(message.text)
-        globals.gui.message_list.insert(tkinter.END, toAppend)
+    if not globals.messages == unpickledmessages:
+        globals.messages = unpickledmessages
+        globals.gui.message_list.delete(0, tkinter.END)
 
+        for message in globals.messages:
+            toAppend = decrypt(message.sender) + " : " + decrypt(message.text)
+            globals.gui.message_list.insert(tkinter.END, toAppend)
+        
+        globals.gui.message_list.see(tkinter.END)
+
+globals.channel = "main"
 globals.gui = gui()
 Thread(target=get_loop).start()
 tkinter.mainloop()

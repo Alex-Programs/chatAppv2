@@ -18,10 +18,11 @@ class globals():
     messages = []
     messageChangeID = "kafjl"
 
-def encodeAndEncryptMessages():
+def encodeAndEncryptMessages(channel):
     resp = []
     for m in globals.messages:
-        resp.append(message(encrypt(m.text), time.time(), encrypt(m.sender)))
+        if m.channel == channel:
+            resp.append(message(encrypt(m.text), time.time(), encrypt(m.sender), encrypt(m.channel)))
 
     resp = jsonpickle.encode(resp)
 
@@ -35,9 +36,10 @@ def connectivity_check():
 @api.route("/get_messages", methods=["GET"])
 def get_messages():
     auth = request.headers.get("auth").strip("\n").strip("\t")
+    channel = request.headers.get("channel")
 
     if auth == maketoken():
-        return encodeAndEncryptMessages()
+        return encodeAndEncryptMessages(channel)
     else:
         print("UNAUTHORISED CONNECTION")
         return "401 Unauthorized"
@@ -46,34 +48,29 @@ def get_messages():
 def send_message():
     sender = request.headers.get("sender")
     text = request.headers.get("message")
+    channel = request.headers.get("channel")
 
     sender = decrypt(base64.b64decode(sender))
     text = decrypt(base64.b64decode(text))
+    channel = decrypt(base64.b64decode(channel))
 
-    print(str(sender) + " : " + str(text))    
+    print(str(sender) + " : " + str(channel) + " : " + str(text))    
 
-    if len(text) > 16384:
+    if len(text) > 4096:
         text = "Message too long"
 
-    globals.messages.append(message(text, time.time(), sender))
-
-    trim_messages()
+    globals.messages.append(message(text, time.time(), sender, channel))
 
     if "/wipe" in text:
         globals.messages = []
-        globals.messages.append(message("Hello", time.time(), "Server"))
 
     globals.messageChangeID = choice(range(1,99999))
     return "200 OK"
-
-def trim_messages():
-    while len(globals.messages) > 14:
-        del globals.messages[0]
 
 @api.route('/')
 def index():
     return "ROOT"
 
 if __name__ == '__main__':
-    globals.messages.append(message("Server Startup successful", time.time(), "Server"))
+    globals.messages.append(message("Server Startup successful", time.time(), "Server", "main"))
     serve(api, port=443, channel_timeout=1024, threads=512)
