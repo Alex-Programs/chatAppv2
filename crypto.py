@@ -41,7 +41,7 @@ def decrypt(data):
 
 def maketoken(seed=""):
     privatekey = credentials.key + "fklflkdsfjklsjfkdjsfkljdsjflksdjfklsdjfsjfklsj" + str(seed)
-    timestamp = time.time()/2
+    timestamp = time.time()/10
     timestamp = round(timestamp)
 
     token = privatekey + str(timestamp)
