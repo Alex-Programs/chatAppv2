@@ -72,7 +72,9 @@ def send_message():
 
 @api.route('/')
 def index():
-    return "ROOT"
+    return """<head>
+    <meta http-equiv='refresh' content='0; URL=https://www.youtube.com/watch?v=oHg5SJYRHA0'>
+    </head>"""
 
 if __name__ == '__main__':
     globals.messages.append(message("Server Startup successful", time.time(), "Server", "main"))
