@@ -7,7 +7,7 @@ from tkinter import simpledialog
 import jsonpickle
 from crypto import *
 
-baseUrl = "http://192.168.0.35:443"
+baseUrl = "http://86.31.173.35:443"
 
 class globals():
     messages = []
@@ -108,15 +108,17 @@ def get_loop():
             globals.lastMessageTime = time.time()
 
 def get():
-    _continue = False
-    while _continue == False:
+    print("Running get()")
+    while True:
         headers = {"auth": maketoken(), "channel" : globals.channel}
         r = requests.get(baseUrl + "/get_messages", headers=headers)
 
         try:
             unpickledmessages = jsonpickle.decode(r.content)
-            _continue = True
+            break
         except:
+            print("Retrying")
+            time.sleep(0.1)
             pass
 
     if not globals.messages == unpickledmessages:
