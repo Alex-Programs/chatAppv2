@@ -59,10 +59,10 @@ def send_message():
     if len(text) > 4096:
         text = "Message too long"
 
-    globals.messages.append(message(text, time.time(), sender, channel))
-
     if "/wipe" in text:
         globals.messages = []
+    else:
+        globals.messages.append(message(text, time.time(), sender, channel))
 
     globals.messageChangeID = choice(range(1,99999))
     return "200 OK"
@@ -73,4 +73,4 @@ def index():
 
 if __name__ == '__main__':
     globals.messages.append(message("Server Startup successful", time.time(), "Server", "main"))
-    serve(api, port=443, channel_timeout=1024, threads=512)
+    api.run()
