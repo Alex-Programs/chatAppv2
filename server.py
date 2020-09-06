@@ -73,4 +73,4 @@ def index():
 
 if __name__ == '__main__':
     globals.messages.append(message("Server Startup successful", time.time(), "Server", "main"))
-    api.run()
+    serve(api, port=443)
