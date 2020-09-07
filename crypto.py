@@ -2,12 +2,17 @@ from Crypto.Cipher import ARC4
 from Crypto.Hash import SHA
 import time
 import base64
+import requests
+import client
 
 class credentials():
     key = ""
 
 def encrypt(data):
     #timestamp acting as a nonce
+    if client.globals.timeOverride:
+        timestamp = get_time() / 256
+        timestamp = round(timestamp)
     timestamp = time.time()/256
     timestamp = round(timestamp)
 
@@ -23,6 +28,9 @@ def encrypt(data):
 
 def decrypt(data):
     #timestamp acting as a nonce
+    if client.globals.timeOverride:
+        timestamp = get_time() / 256
+        timestamp = round(timestamp)
     timestamp = time.time()/256
     timestamp = round(timestamp)
 
@@ -41,6 +49,10 @@ def decrypt(data):
 
 def maketoken(seed=""):
     privatekey = credentials.key + "fklflkdsfjklsjfkdjsfkljdsjflksdjfklsdjfsjfklsj" + str(seed)
+
+    if client.globals.timeOverride:
+        timestamp = get_time() / 10
+        timestamp = round(timestamp)
     timestamp = time.time()/10
     timestamp = round(timestamp)
 
@@ -51,3 +63,4 @@ def maketoken(seed=""):
     hashedKey = base64.b64encode(hashedKey).decode("utf8")
 
     return hashedKey
+

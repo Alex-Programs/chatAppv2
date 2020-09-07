@@ -36,6 +36,11 @@ def encodeAndEncryptMessages(channel):
 def connectivity_check():
     return str(globals.messageChangeID) + " CONNECTIVITY OK"
 
+#for when your friend's NTP server is fucked and you can't be arsed to fix it
+@api.route("/get_time", methods=["GET"])
+def get_time():
+    return str(time.time())
+
 @api.route("/get_messages", methods=["GET"])
 def get_messages():
     auth = request.headers.get("auth").strip("\n").strip("\t")
