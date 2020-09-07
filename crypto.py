@@ -3,7 +3,7 @@ from Crypto.Hash import SHA
 import time
 import base64
 import requests
-from nettime import get_time
+import nettime
 
 class credentials():
     key = ""
@@ -11,7 +11,7 @@ class credentials():
 def encrypt(data):
     #timestamp acting as a nonce
     if nettime.globals.timeOverride:
-        timestamp = get_time() / 256
+        timestamp = nettime.get_time() / 256
         timestamp = round(timestamp)
     timestamp = time.time()/256
     timestamp = round(timestamp)
@@ -29,7 +29,7 @@ def encrypt(data):
 def decrypt(data):
     #timestamp acting as a nonce
     if nettime.globals.timeOverride:
-        timestamp = get_time() / 256
+        timestamp = nettime.get_time() / 256
         timestamp = round(timestamp)
     timestamp = time.time()/256
     timestamp = round(timestamp)
@@ -51,7 +51,7 @@ def maketoken(seed=""):
     privatekey = credentials.key + "fklflkdsfjklsjfkdjsfkljdsjflksdjfklsdjfsjfklsj" + str(seed)
 
     if nettime.globals.timeOverride:
-        timestamp = get_time() / 10
+        timestamp = nettime.get_time() / 10
         timestamp = round(timestamp)
     timestamp = time.time()/10
     timestamp = round(timestamp)
