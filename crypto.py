@@ -3,7 +3,7 @@ from Crypto.Hash import SHA
 import time
 import base64
 import requests
-import client
+from nettime import get_time
 
 class credentials():
     key = ""

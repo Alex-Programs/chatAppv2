@@ -15,9 +15,6 @@ class globals():
     messageChangeID = "fklfklskfjs"
     lastMessageTime = 0
     channel = ""
-    timeOverride = False
-    lastOverrideTime = 0
-    lastOverrideOffset = 0
 
 class gui():
     def __init__(self):
@@ -133,18 +130,6 @@ def get():
             globals.gui.message_list.insert(tkinter.END, toAppend)
         
         globals.gui.message_list.see(tkinter.END)
-
-def get_time():
-    if time.time() > globals.lastOverrideTime + 30:
-        realtime = float(requests.get(baseUrl + "/get_time").content)
-        globals.lastOverrideOffset = realtime - time.time()
-        globals.lastOverrideTime = time.time()
-
-        print("Time: " + str(realtime))
-        return realtime
-        
-    else:
-        return time.time() + globals.lastOverrideOffset
 
 if __name__ == "__main__":
     globals.channel = "main"
