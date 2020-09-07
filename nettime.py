@@ -7,16 +7,19 @@ class globals:
     lastOverrideOffset = 0
     baseUrl = "http://86.31.173.35:443"
 
+
+def faketime():
+    return time.time()
+
 def get_time():
-    if time.time() > globals.lastOverrideTime + 10:
+    if faketime() > globals.lastOverrideTime + 10:
         realtime = float(requests.get(globals.baseUrl + "/get_time").content)
-        globals.lastOverrideOffset = realtime - (time.time())
-        globals.lastOverrideTime = time.time()
+        globals.lastOverrideOffset = realtime - (faketime())
+        globals.lastOverrideTime = faketime()
 
         print("Time: " + str(realtime))
         print("Offset: " + str(globals.lastOverrideOffset))
         return realtime
         
     else:
-        print("Offset: " + str(globals.lastOverrideOffset))
-        return (time.time()) + globals.lastOverrideOffset
+        return (faketime()) + globals.lastOverrideOffset

@@ -33,16 +33,16 @@ class gui():
         self.scrollbar = tkinter.Scrollbar(self.messages_frame)
 
 
-        self.message_list = tkinter.Listbox(self.messages_frame, height=15, width=50, yscrollcommand=self.scrollbar.set)
+        self.message_list = tkinter.Listbox(self.messages_frame, height=20, width=120, yscrollcommand=self.scrollbar.set)
         self.scrollbar.pack(side=tkinter.RIGHT, fill=tkinter.Y)
         self.message_list.pack(side=tkinter.LEFT, fill=tkinter.BOTH)
         self.message_list.pack()
         self.messages_frame.pack()
 
-        self.name_field = tkinter.Entry(self.top, textvariable=self.name, width=50)
+        self.name_field = tkinter.Entry(self.top, textvariable=self.name, width=120)
         self.name_field.pack()
 
-        self.entry_field = tkinter.Entry(self.top, textvariable=self.message, width=50)
+        self.entry_field = tkinter.Entry(self.top, textvariable=self.message, width=120)
         self.entry_field.bind("<Return>", send)
         self.entry_field.pack()
         self.send_button = tkinter.Button(self.top, text="Send", command=send)
@@ -52,6 +52,8 @@ class gui():
 
 def send(event=None):
     message = globals.gui.message.get()
+    globals.gui.entry_field.delete(0, tkinter.END)
+
     if parse_commands(message) == False:
         name = globals.gui.name.get()
         print("Sending: " + message + " : " + name)
