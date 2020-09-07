@@ -10,7 +10,7 @@ class credentials():
 
 def encrypt(data):
     #timestamp acting as a nonce
-    if client.globals.timeOverride:
+    if nettime.globals.timeOverride:
         timestamp = get_time() / 256
         timestamp = round(timestamp)
     timestamp = time.time()/256
@@ -28,7 +28,7 @@ def encrypt(data):
 
 def decrypt(data):
     #timestamp acting as a nonce
-    if client.globals.timeOverride:
+    if nettime.globals.timeOverride:
         timestamp = get_time() / 256
         timestamp = round(timestamp)
     timestamp = time.time()/256
@@ -50,7 +50,7 @@ def decrypt(data):
 def maketoken(seed=""):
     privatekey = credentials.key + "fklflkdsfjklsjfkdjsfkljdsjflksdjfklsdjfsjfklsj" + str(seed)
 
-    if client.globals.timeOverride:
+    if nettime.globals.timeOverride:
         timestamp = get_time() / 10
         timestamp = round(timestamp)
     timestamp = time.time()/10
