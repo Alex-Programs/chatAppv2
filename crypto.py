@@ -4,19 +4,16 @@ import time
 import base64
 import requests
 import nettime
+from random import *
 
 class credentials():
     key = ""
 
 def encrypt(data):
-    #timestamp acting as a nonce
-    if nettime.globals.timeOverride:
-        timestamp = nettime.get_time() / 256
-        timestamp = round(timestamp)
     timestamp = time.time()/256
     timestamp = round(timestamp)
 
-    key = credentials.key + str(timestamp)
+    key = credentials.key
     key = bytes(key, "utf8")
 
     ###
@@ -27,14 +24,7 @@ def encrypt(data):
     return arc.encrypt(bytes(data, "utf8"))
 
 def decrypt(data):
-    #timestamp acting as a nonce
-    if nettime.globals.timeOverride:
-        timestamp = nettime.get_time() / 256
-        timestamp = round(timestamp)
-    timestamp = time.time()/256
-    timestamp = round(timestamp)
-
-    key = credentials.key + str(timestamp)
+    key = credentials.key
     key = bytes(key, "utf8")
 
     ###
@@ -50,17 +40,16 @@ def decrypt(data):
 def maketoken(seed=""):
     privatekey = credentials.key + "fklflkdsfjklsjfkdjsfkljdsjflksdjfklsdjfsjfklsj" + str(seed)
 
-    if nettime.globals.timeOverride:
-        timestamp = nettime.get_time() / 10
-        timestamp = round(timestamp)
-    timestamp = time.time()/10
-    timestamp = round(timestamp)
+    rand = ""
 
-    token = privatekey + str(timestamp)
+    for i in range(1, 64):
+        rand = rand + str(choice(range(0, 9)))
 
-    hashedKey = SHA.new(bytes(token, "utf8")).digest()
+    token = privatekey + rand
 
-    hashedKey = base64.b64encode(hashedKey).decode("utf8")
+    token = encrypt(token)
 
-    return hashedKey
+    token = base64.b64encode(token)
+
+    return token
 

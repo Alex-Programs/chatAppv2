@@ -21,6 +21,8 @@ class globals():
     <meta http-equiv='refresh' content='0; URL=https://www.youtube.com/watch?v=oHg5SJYRHA0'>
     </head>'''
 
+    pastAuthentications = []
+
 def encodeAndEncryptMessages(channel):
     resp = []
     for m in globals.messages:
@@ -30,6 +32,19 @@ def encodeAndEncryptMessages(channel):
     resp = jsonpickle.encode(resp)
 
     return resp
+
+def check_token(token):
+    token = decrypt(base64.b64decode(token))
+
+    if credentials.key in token:
+        if token not in globals.pastAuthentications:
+            return True
+
+        else:
+            return False
+
+    else:
+        return False
 
 #not actually a connectivity check, but hey, it looks like one
 @api.route("/connectivity_check", methods=["GET"])
@@ -46,7 +61,7 @@ def get_messages():
     auth = request.headers.get("auth").strip("\n").strip("\t")
     channel = request.headers.get("channel")
 
-    if auth == maketoken():
+    if check_token(auth):
         return encodeAndEncryptMessages(channel)
     else:
         print("UNAUTHORISED CONNECTION")
