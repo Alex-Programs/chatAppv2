@@ -1,2 +1,2 @@
 # chatAppv2
-ChatApp, but back with encryption and less bugs.
+ChatApp, but with encryption and less bugs.
